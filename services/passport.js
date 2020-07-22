@@ -13,4 +13,9 @@ passport.use(
 		passportCallback
 	)
 );
+
+passport.serializeUser((user, done) => {
+	done(null, user.id);
+});
+
 module.exports = passport;
