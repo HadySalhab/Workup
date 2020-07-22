@@ -1,0 +1,20 @@
+{
+	"name": "workup",
+	"version": "1.0.0",
+	"description": "Workout tracking social network",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"author": "Hady Salhab",
+	"license": "MIT",
+	"dependencies": {
+		"bcryptjs": "^2.4.3",
+		"express": "^4.17.1",
+		"jsonwebtoken": "^8.5.1",
+		"mongoose": "^5.9.25"
+	},
+	"devDependencies": {
+		"concurrently": "^5.2.0"
+	}
+}
