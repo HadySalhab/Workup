@@ -1,7 +1,11 @@
 const express = require("express");
 const authRoutes = require("./routes/authRoutes");
+const connectDB = require("./config/db");
 
 const app = express();
+
+// Connect to db
+connectDB();
 
 // Mount routers
 app.use("/api/auth", authRoutes);
