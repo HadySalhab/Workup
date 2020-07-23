@@ -1,5 +1,6 @@
 const passport = require("passport");
 const User = require("../models/User");
+const keys = require("../config/keys");
 
 // @desc      Register,Login user with google oauth
 // @route     GET /api/v1/auth/google/
@@ -13,11 +14,23 @@ exports.googleLogin = (req, res, next) => {
 				message: "Server error",
 			});
 		} else {
-			console.log(user);
-			res.status(200).json({
-				success: true,
-				message: "Logged in",
-			});
+			sendCookie(user._id, 200, res); // TODO: SEND JWT LATER
 		}
 	})(req, res, next);
 };
+
+function sendCookie(data, statusCode, res) {
+	console.log(keys.cookieExpire, keys.cookieKey);
+	const cookieOptions = {
+		expires: new Date(Date.now() + keys.cookieExpire * 24 * 60 * 60 * 1000), //convert to ms
+		httpOnly: false, // cookie cannot be access or modified by the browser (to prevent xss attack)
+	};
+	if ((process.env.NODE_ENV = "production")) {
+		cookieOptions.secure = true; //for encrypted connection:https
+	}
+	res.cookie(keys.cookieKey, data, cookieOptions);
+	res.status(statusCode).json({
+		success: true,
+		data,
+	});
+}

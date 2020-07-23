@@ -3,12 +3,15 @@ const authRoutes = require("./routes/authRoutes");
 const passport = require("passport");
 const connectDB = require("./config/db");
 
+const cookieParser = require("cookie-parser");
+
 const app = express();
 
 // Connect to db
 connectDB();
 
 // Middlewares
+app.use(cookieParser());
 app.use(passport.initialize());
 
 // Mount routers
