@@ -1,6 +1,6 @@
 const passport = require("../services/passport");
 const express = require("express");
-const { googleLogin } = require("../controllers/auth");
+const { googleLogin, logout } = require("../controllers/auth");
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ router.get(
 		scope: ["profile", "email"],
 	})
 );
-
+router.get("/logout", logout);
 router.get("/google/callback", googleLogin);
 
 module.exports = router;
