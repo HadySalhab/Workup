@@ -2,7 +2,7 @@ const passport = require("passport");
 const User = require("../models/User");
 
 // @desc      Register,Login user with google oauth
-// @route     GET /api/v1/auth/google/callback
+// @route     GET /api/v1/auth/google/
 // @access    Public
 exports.googleLogin = (req, res, next) => {
 	passport.authenticate("google", { session: false }, (err, user, info) => {
