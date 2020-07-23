@@ -6,4 +6,7 @@ Built using modern technologies: node.js, express, mongoDB, mongoose. 😁
 
 ## Authentication
 
-- PassportJs + Google OAuth
+- PassportJS + Google OAuth
+- cookies + JWT
+- local authentication: Username,email,password,confirm password,forgot password
+- logout
