@@ -4,12 +4,14 @@ const { passportCallback } = require("../controllers/auth");
 const keys = require("../config/keys");
 const User = require("../models/User");
 
+const { googleCallbackURI } = keys.googleCallbackURI;
+
 passport.use(
 	new GoogleStrategy(
 		{
 			clientID: keys.googleClientID,
 			clientSecret: keys.googleClientSecret,
-			callbackURL: "/api/v1/auth/google/callback",
+			callbackURL: `${googleCallbackURI}/api/v1/auth/google/callback`,
 		},
 		// verify callback
 		async (accessToken, refreshToken, profile, done) => {
