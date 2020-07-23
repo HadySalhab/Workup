@@ -2,6 +2,20 @@ const passport = require("passport");
 const User = require("../models/User");
 const keys = require("../config/keys");
 
+// @desc      Register user
+// @route     POST /api/v1/auth/register
+// @access    Public
+exports.register = async (req, res, next) => {
+	const { name, email, password, passwordConfirm } = req.body;
+	const user = await User.create({
+		name,
+		email,
+		password,
+		passwordConfirm,
+	});
+	sendTokenResponse(user, 200, res);
+};
+
 // @desc      Register,Login user with google oauth
 // @route     GET /api/v1/auth/google/
 // @access    Public
@@ -14,7 +28,7 @@ exports.googleLogin = (req, res, next) => {
 				message: "Server error",
 			});
 		} else {
-			sendCookie(user._id, 200, res); // TODO: SEND JWT LATER
+			sendTokenResponse(user, 200, res);
 		}
 	})(req, res, next);
 };
@@ -33,8 +47,9 @@ exports.logout = (req, res, next) => {
 	});
 };
 
-function sendCookie(data, statusCode, res) {
-	console.log(keys.cookieExpire, keys.cookieKey);
+function sendTokenResponse(user, statusCode, res) {
+	console.log(user);
+	const token = user.getSignedJWT();
 	const cookieOptions = {
 		expires: new Date(Date.now() + keys.cookieExpire * 24 * 60 * 60 * 1000), //convert to ms
 		httpOnly: true, // cookie cannot be access or modified by the browser (to prevent xss attack)
@@ -42,9 +57,9 @@ function sendCookie(data, statusCode, res) {
 	if (process.env.NODE_ENV === "production") {
 		cookieOptions.secure = true; //for encrypted connection:https
 	}
-	res.cookie(keys.cookieKey, data, cookieOptions);
+	res.cookie(keys.cookieKey, token, cookieOptions);
 	res.status(statusCode).json({
 		success: true,
-		data,
+		token,
 	});
 }

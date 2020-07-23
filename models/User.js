@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
+const keys = require("../config/keys");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
 	googleId: {
@@ -70,5 +73,26 @@ const userSchema = new mongoose.Schema({
 		select: false,
 	},
 });
-const User = mongoose.model("users", userSchema);
-module.exports = User;
+
+// https://mongoosejs.com/docs/middleware.html#order Save/Validate Hooks
+// pre('save') will run after the validations
+userSchema.pre("save", async function (next) {
+	// Only run this function if password was actually modified (created,modified)
+	if (!this.isModified("password")) return next();
+	// Hash the password
+	const salt = await bcrypt.genSalt(10);
+	this.password = await bcrypt.hash(this.password, salt);
+	// Delete passwordConfirm field (at this stage,validators have been executed)
+	this.passwordConfirm = undefined;
+	next();
+});
+
+// https://mongoosejs.com/docs/guide.html#methods (instance methods)
+// Sign JWT and return
+userSchema.methods.getSignedJWT = function () {
+	return jwt.sign({ id: this._id }, keys.jwtSecret, {
+		expiresIn: keys.jwtExpire,
+	});
+};
+
+module.exports = mongoose.model("users", userSchema);
