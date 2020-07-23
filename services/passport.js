@@ -11,22 +11,26 @@ passport.use(
 			clientSecret: keys.googleClientSecret,
 			callbackURL: "/api/auth/google/callback",
 		},
-		passportCallback
+		// verify callback
+		async (accessToken, refreshToken, profile, done) => {
+			try {
+				const existingUser = await User.findOne({ googleId: profile.id });
+				if (existingUser) {
+					return done(null, existingUser);
+				}
+				const user = await new User({
+					googleId: profile.id,
+					name: profile.displayName,
+					photo: profile.photos[0].value,
+					email: profile.emails[0].value,
+				}).save();
+				done(null, user);
+			} catch (err) {
+				console.log(err);
+				done(err);
+			}
+		}
 	)
 );
-
-passport.serializeUser((user, done) => {
-	done(null, user.id);
-});
-
-passport.deserializeUser(async (id, done) => {
-	try {
-		const user = await User.findById(id);
-		done(null, user);
-	} catch (err) {
-		console.log(err);
-		done(err, null);
-	}
-});
 
 module.exports = passport;

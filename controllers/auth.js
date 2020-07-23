@@ -1,23 +1,23 @@
+const passport = require("passport");
 const User = require("../models/User");
 
 // @desc      Register,Login user with google oauth
-// @route     GET /api/v1/auth/google
+// @route     GET /api/v1/auth/google/callback
 // @access    Public
-exports.passportCallback = async (accessToken, refreshToken, profile, done) => {
-	try {
-		const existingUser = await User.findOne({ googleId: profile.id });
-		if (existingUser) {
-			return done(null, existingUser);
+exports.googleLogin = (req, res, next) => {
+	passport.authenticate("google", { session: false }, (err, user, info) => {
+		if (err) {
+			console.log(err);
+			res.status(500).json({
+				success: false,
+				message: "Server error",
+			});
+		} else {
+			console.log(user);
+			res.status(200).json({
+				success: true,
+				message: "Logged in",
+			});
 		}
-		const user = await new User({
-			googleId: profile.id,
-			name: profile.displayName,
-			photo: profile.photos[0].value,
-			email: profile.emails[0].value,
-		}).save();
-		done(null, user);
-	} catch (err) {
-		console.log(err);
-		done(err, null);
-	}
+	})(req, res, next);
 };
