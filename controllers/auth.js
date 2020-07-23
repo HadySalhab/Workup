@@ -39,7 +39,7 @@ function sendCookie(data, statusCode, res) {
 		expires: new Date(Date.now() + keys.cookieExpire * 24 * 60 * 60 * 1000), //convert to ms
 		httpOnly: true, // cookie cannot be access or modified by the browser (to prevent xss attack)
 	};
-	if ((process.env.NODE_ENV = "production")) {
+	if (process.env.NODE_ENV === "production") {
 		cookieOptions.secure = true; //for encrypted connection:https
 	}
 	res.cookie(keys.cookieKey, data, cookieOptions);
